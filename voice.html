@@ -1,0 +1,58 @@
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
+<body>
+<script>
+var recognition = new webkitSpeechRecognition();
+recognition.continuous = true;
+recognition.interimResults = true;
+recognition.lang = "ru-RU"
+final_transcript = "";
+interim_transcript = "";
+
+recognition.onresult = function(event) { 
+    
+  console.log(event) 
+  
+  for (var i = event.resultIndex; i < event.results.length; ++i) {
+
+        /* если фраза финальная (уже откорректированная) сохраняем в конечный результат */
+        if (event.results[i].isFinal) {
+            final_transcript = event.results[i][0].transcript;
+            console.log("Final: "+ event.results[i][0].transcript);
+            $('#log').css('color','green');
+            $('#log').text(final_transcript);
+         } else { /* иначе сохраянем в промежуточный */
+            interim_transcript = event.results[i][0].transcript;
+             console.log("not final: "+event.results[i][0].transcript);
+             $('#log').css('color','black');
+            $('#log').text(interim_transcript);
+         }
+      if (interim_transcript.search('наутилус') >= 0) {
+          console.log('websock');
+          $('#fr01').attr('src','https://ya.ru')
+      }
+     }
+
+
+    
+}
+recognition.onerror = function(event) {
+    console.log("ERROR!!!");
+    console.log(event);
+}
+recognition.onend = function(event) {
+    console.log("END!!!");
+    console.log(event);
+    setTimeout(function() {recognition.start()},3000);
+}
+
+recognition.start();
+</script>
+
+
+
+Log: <div id="log"></div>
+<div id="myframe"></div>
+<iframe id="fr01"></iframe>
+</body>
